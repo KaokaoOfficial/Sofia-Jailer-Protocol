@@ -100,12 +100,12 @@ There is no guarantee of support, maintenance frequency, or compatibility with e
 
 Suggestions and bug reports are welcome. Keep reports focused and include enough detail to reproduce the behaviour. Before proposing a change, check that it does not weaken the extension's blocking or configuration flows.
 
-## 📄 Licenza e Attribuzione
+## 📄 License and Attribution
 
-Questo progetto è distribuito con **licenza MIT**. Per consultare i termini completi, leggi il file [LICENSE](LICENSE).
+This project is distributed under the **MIT License**. Please read the [LICENSE](LICENSE) file for the full terms.
 
-Sviluppato originariamente da **Kaokao34** ([@KaokaoOfficial](https://github.com/KaokaoOfficial)).
+Originally developed by **Kaokao34** ([@KaokaoOfficial](https://github.com/KaokaoOfficial)).
 
-> **Una cortesia per chi utilizza questo progetto:** se pubblichi o distribuisci una tua versione dell'estensione, ti chiedo gentilmente di mantenere un riferimento al progetto originale, ad esempio nella descrizione dell'estensione o nella pagina del progetto, con una dicitura come:
+> **A small courtesy to anyone using this project:** if you publish or distribute your own version of this extension, I kindly ask you to include a reference to the original project, for example in the extension description or on the project page, using a credit such as:
 >
 > *Powered by [Kaokao34](https://github.com/KaokaoOfficial)*
