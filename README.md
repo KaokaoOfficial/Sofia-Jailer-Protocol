@@ -100,10 +100,10 @@ There is no guarantee of support, maintenance frequency, or compatibility with e
 
 Suggestions and bug reports are welcome. Keep reports focused and include enough detail to reproduce the behaviour. Before proposing a change, check that it does not weaken the extension's blocking or configuration flows.
 
-## Credits
+## 📄 Licenza e Attribuzione
 
-Created by **Kaokao34** — [@KaokaoOfficial](https://github.com/KaokaoOfficial).
+Questo progetto è distribuito sotto licenza **MIT** — consulta il file [LICENSE](LICENSE) per i dettagli.  
+Sviluppato originalmente da **Kaokao34** ([@KaokaoOfficial](https://github.com/KaokaoOfficial)).
 
-## License
-
-Released under the MIT License. See [LICENSE](LICENSE).
+> **Nota per chi usa questo codice:** Se ospiti una tua versione di questa estensione, ti chiederei gentilmente di mantenere un piccolo riferimento al progetto originale (ad esempio nella descrizione dell'estensione o nella pagina del progetto), usando una dicitura come:  
+> *Powered by [Kaokao34](https://github.com/KaokaoOfficial)*
