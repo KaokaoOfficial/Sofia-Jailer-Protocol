@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sofia: Jailer Protocol - Control Center</title>
+  <link rel="icon" type="image/png" href="icon32.png">
+  <style>
+    :root {
+      --nf-black: #000000;
+      --nf-dark: #121212;
+      --nf-card: #181818;
+      --nf-surface: #222222;
+      --nf-surface-input: #2B2B2B;
+      --nf-red: #E50914;
+      --nf-red-hover: #B81D24;
+      --nf-red-glow: rgba(229, 9, 20, 0.4);
+      --nf-text: #FFFFFF;
+      --nf-text-muted: #9E9E9E;
+      --nf-border: rgba(255, 255, 255, 0.12);
+      --nf-border-focus: #E50914;
+      --nf-radius: 6px;
+      --nf-font: "Netflix Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --nf-mono: "SF Mono", Monaco, "Cascadia Code", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0F0F0F;
+      color: var(--nf-text);
+      font-family: var(--nf-font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    .top-navbar {
+      height: 68px;
+      background: rgba(18, 18, 18, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--nf-border);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-wrap {
+      width: 40px;
+      height: 40px;
+      background: #181818;
+      border: 1px solid rgba(229, 9, 20, 0.45);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--nf-red-glow);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .brand-logo-svg {
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-title span {
+      color: var(--nf-red);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Styled Language Switcher (No ugly native select) */
+    .lang-switcher {
+      display: flex;
+      background: #242424;
+      border: 1px solid var(--nf-border);
+      border-radius: 20px;
+      padding: 3px;
+    }
+
+    .lang-pill {
+      background: transparent;
+      border: none;
+      color: var(--nf-text-muted);
+      padding: 5px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .lang-pill:hover {
+      color: #fff;
+    }
+
+    .lang-pill.active {
+      background: var(--nf-red);
+      color: #fff;
+      box-shadow: 0 2px 8px var(--nf-red-glow);
+    }
+
+    .header-badge {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.8px;
+    }
+    .header-badge.active {
+      background: rgba(229, 9, 20, 0.15);
+      color: var(--nf-red);
+      border: 1px solid rgba(229, 9, 20, 0.4);
+    }
+    .header-badge.inactive {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--nf-text-muted);
+      border: 1px solid var(--nf-border);
+    }
+
+    /* Main Container (Widescreen Desktop) */
+    .main-wrapper {
+      max-width: 1220px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 36px 40px;
+      flex: 1;
+    }
+
+    /* Notification Banner */
+    .banner {
+      padding: 14px 20px;
+      border-radius: var(--nf-radius);
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 26px;
+      display: none;
+      text-align: center;
+    }
+    .banner.error {
+      background: rgba(229, 9, 20, 0.18);
+      color: #FF5A5F;
+      border: 1px solid rgba(229, 9, 20, 0.45);
+      display: block;
+    }
+    .banner.success {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      display: block;
+    }
+    .banner.warning {
+      background: rgba(245, 158, 11, 0.18);
+      color: #FBBF24;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      display: block;
+    }
+
+    /* ==========================================
+       VIEW 1: ACTIVE LOCKED WIDESCREEN GRID
+       ========================================== */
+    .active-dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .nf-card {
+      background: var(--nf-card);
+      border: 1px solid var(--nf-border);
+      border-radius: var(--nf-radius);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nf-card-hero {
+      border-color: rgba(229, 9, 20, 0.4);
+      background: linear-gradient(180deg, #1A1A1A 0%, #151515 100%);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--nf-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .card-countdown {
+      font-family: var(--nf-mono);
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--nf-red);
+      letter-spacing: 2px;
+      margin: 12px 0 18px 0;
+    }
+
+    .hero-meta-row {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12.5px;
+      color: #BBB;
+      border-top: 1px solid var(--nf-border);
+      padding-top: 14px;
+      margin-top: auto;
+    }
+
+    .metric-number {
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+      margin: 8px 0 12px 0;
+    }
+
+    .domains-scrollbox {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .active-domain-chip {
+      background: rgba(229, 9, 20, 0.15);
+      border: 1px solid rgba(229, 9, 20, 0.4);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: var(--nf-radius);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* Widescreen Bottom Callout with generous spacing and flex protection */
+    .locked-callout {
+      grid-column: span 3;
+      background: #141414;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--nf-radius);
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 36px;
+      margin-top: 24px;
+    }
+    .locked-callout-text {
+      flex: 1;
+      min-width: 0;
+      font-size: 13.5px;
+      color: #A0A0A0;
+      line-height: 1.6;
+    }
+    #btnOpenCreatorTerminal {
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 13px 26px;
+      letter-spacing: 0.8px;
+    }
+
+    /* ==========================================
+       VIEW 2: SETUP 2-COLUMN WIDESCREEN GRID
+       ========================================== */
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .section-header {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--nf-red);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--nf-border);
+      padding-bottom: 8px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-size: 11.5px;
+      color: var(--nf-text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input, select, textarea {
+      background: var(--nf-surface-input);
+      border: 1px solid var(--nf-border);
+      color: #fff;
+      padding: 13px 16px;
+      border-radius: var(--nf-radius);
+      width: 100%;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--nf-red);
+      background: #333333;
+      box-shadow: 0 0 0 2px var(--nf-red-glow);
+    }
+
+    /* Preset Chips */
+    .presets-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .preset-chip {
+      background: var(--nf-surface);
+      border: 1px solid var(--nf-border);
+      color: var(--nf-text-muted);
+      padding: 7px 14px;
+      border-radius: var(--nf-radius);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .preset-chip:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+    }
+
+    .preset-chip.active {
+      background: var(--nf-red);
+      border-color: var(--nf-red);
+      color: #fff;
+    }
+
+    .custom-input-wrap {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-nf-red {
+      background: var(--nf-red);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--nf-radius);
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 12.5px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .btn-nf-red:hover {
+      background: var(--nf-red-hover);
+    }
+
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      min-height: 34px;
+    }
+
+    .domain-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--nf-surface);
+      border: 1px solid var(--nf-border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: var(--nf-radius);
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .domain-tag-remove {
+      cursor: pointer;
+      color: var(--nf-red);
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1;
+    }
+    .domain-tag-remove:hover {
+      color: #fff;
+    }
+
+    /* Switch Rows */
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--nf-surface);
+      border: 1px solid var(--nf-border);
+      border-radius: var(--nf-radius);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .switch-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .switch-desc {
+      font-size: 12px;
+      color: var(--nf-text-muted);
+      line-height: 1.4;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+      margin-left: 14px;
+    }
+
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #444;
+      transition: .25s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .25s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--nf-red);
+      box-shadow: 0 0 10px var(--nf-red-glow);
+    }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .date-row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .btn-activate-hero {
+      background: var(--nf-red);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: var(--nf-radius);
+      cursor: pointer;
+      width: 100%;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      transition: background 0.2s ease, transform 0.1s ease;
+      margin-top: 10px;
+    }
+    .btn-activate-hero:hover {
+      background: var(--nf-red-hover);
+    }
+
+    /* Footer */
+    .bottom-footer {
+      text-align: center;
+      padding: 24px 0 32px 0;
+      font-size: 11px;
+      color: #555;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .bottom-footer:hover {
+      color: var(--nf-red);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--nf-card);
+      border: 1px solid var(--nf-border);
+      border-radius: var(--nf-radius);
+      padding: 32px 28px;
+      text-align: center;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95);
+    }
+
+    .modal-papi-card {
+      max-width: 640px;
+      padding: 32px 30px;
+    }
+
+    .papi-video-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: var(--nf-radius);
+      overflow: hidden;
+      margin: 18px 0;
+      border: 1px solid var(--nf-border);
+      position: relative;
+    }
+
+    .papi-progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #2B2B2B;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .papi-progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--nf-red);
+      transition: width 0.3s ease;
+    }
+
+    .view-hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Netflix Navigation Bar -->
+  <header class="top-navbar">
+    <div class="brand-group">
+      <div class="brand-logo-wrap">
+        <svg class="brand-logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="nfDuotoneBrand" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FF383F"/>
+              <stop offset="45%" stop-color="#E50914"/>
+              <stop offset="100%" stop-color="#7A0006"/>
+            </linearGradient>
+          </defs>
+          <path d="M68 19 H40 C28 19 24 26 24 35 C24 44 33 49 50 50 C68 51 76 57 76 66 C76 75 71 81 58 81 H30" 
+                stroke="url(#nfDuotoneBrand)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="brand-title">SOFIA <span>JAILER</span></div>
+    </div>
+
+    <div class="nav-controls">
+      <!-- Custom Styled Language Switcher -->
+      <div class="lang-switcher">
+        <button type="button" class="lang-pill active" id="btnLangIt">ITALIANO</button>
+        <button type="button" class="lang-pill" id="btnLangEn">ENGLISH</button>
+      </div>
+
+      <div id="headerStatusBadge" class="header-badge inactive">INATTIVO</div>
+    </div>
+  </header>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    <div id="banner" class="banner"></div>
+
+    <!-- ==========================================
+         VIEW 1: ACTIVE LOCKED WIDESCREEN DASHBOARD
+         ========================================== -->
+    <div id="viewActiveLocked" class="view-hidden">
+      <div class="active-dashboard-grid">
+        <!-- Col 1: Status & Time -->
+        <div class="nf-card nf-card-hero">
+          <div class="card-label" id="lblCardStatus">STATO ATTUALE</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <span class="header-badge active" id="lockedBadge">PROTOCOLLO ATTIVO</span>
+            <span class="header-badge" id="lockedModeBadge" style="background:#242424; color:#fff;">TEMPO DETERMINATO</span>
+          </div>
+          <div class="card-label" style="margin-top: 14px;" id="lblCardCountdown">TEMPO RIMANENTE</div>
+          <div id="infoCountdown" class="card-countdown">--:--:--:--</div>
+          
+          <div class="hero-meta-row">
+            <div><span style="color:#777;" id="lblMetaStart">Inizio:</span> <span id="infoStartTime" style="font-family:var(--nf-mono);">--</span></div>
+            <div><span style="color:#777;" id="lblMetaEnd">Fine:</span> <span id="infoEndTime" style="font-family:var(--nf-mono);">--</span></div>
+          </div>
+        </div>
+
+        <!-- Col 2: Violations & Rules (Clean, no spoilers about Rickroll!) -->
+        <div class="nf-card">
+          <div class="card-label" id="lblCardViolations">VIOLAZIONI REGISTRATE</div>
+          <div id="infoViolations" class="metric-number" style="color:var(--nf-red);">0</div>
+
+          <div style="border-top: 1px solid var(--nf-border); margin-top: auto; padding-top: 16px;">
+            <div class="card-label" id="lblCardBypass">MODALITÀ SBLOCCO</div>
+            <div id="infoBypassMode" style="font-size: 14px; font-weight: 800; color: #fff;">CONSENTITO</div>
+            <div id="infoWhitelistContainer" style="margin-top: 10px; font-size: 12px; color: #888;"></div>
+          </div>
+        </div>
+
+        <!-- Col 3: Blocked Domains -->
+        <div class="nf-card">
+          <div class="card-label" id="lblCardDomains">DOMINI SIGILLATI</div>
+          <div class="domains-scrollbox" id="infoBlockedDomains"></div>
+          <div style="margin-top: auto; padding-top: 14px; font-size: 11.5px; color: #777;" id="lblCardDomainsHint">
+            Ogni tentativo di navigazione su questi domini viene immediatamente bloccato.
+          </div>
+        </div>
+
+        <!-- Widescreen Bottom Callout (Flawless gap, no overlap) -->
+        <div class="locked-callout">
+          <div class="locked-callout-text" id="lockedCalloutText">
+            🔒 <strong>Parametri Sigillati:</strong> Una volta attivato, Sofia non consente modifiche per impedire l'auto-sabotaggio.
+          </div>
+          <button type="button" id="btnOpenCreatorTerminal" class="btn-nf-red">TERMINALE CREATORE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================
+         VIEW 2: SETUP 2-COLUMN WIDESCREEN GRID
+         ========================================== -->
+    <div id="viewSetup">
+      <div class="setup-grid">
+        <!-- LEFT COLUMN: Targets & Security -->
+        <div class="nf-card">
+          <div class="section-header" id="secHeader1">01 / PIATTAFORME DA BLOCCARE</div>
+
+          <label id="lblPresets">Piattaforme Consigliate (Clicca per attivare/disattivare)</label>
+          <div class="presets-container" id="presetsContainer">
+            <span class="preset-chip active" data-domain="youtube.com">YouTube</span>
+            <span class="preset-chip" data-domain="instagram.com">Instagram</span>
+            <span class="preset-chip" data-domain="tiktok.com">TikTok</span>
+            <span class="preset-chip" data-domain="x.com">X / Twitter</span>
+            <span class="preset-chip" data-domain="facebook.com">Facebook</span>
+            <span class="preset-chip" data-domain="reddit.com">Reddit</span>
+            <span class="preset-chip" data-domain="twitch.tv">Twitch</span>
+            <span class="preset-chip" data-domain="netflix.com">Netflix</span>
+          </div>
+
+          <div class="input-group">
+            <label id="lblCustomDomain">Aggiungi Qualsiasi Dominio</label>
+            <div class="custom-input-wrap">
+              <input type="text" id="customDomainInput" placeholder="es. discord.com, anime.to (anche separati da virgola)">
+              <button type="button" id="btnAddDomain" class="btn-nf-red">AGGIUNGI</button>
+            </div>
+            <div class="tags-container" id="domainsTagsContainer"></div>
+          </div>
+
+          <div class="section-header" style="margin-top: 14px;" id="secHeader2">02 / SICUREZZA & CODICE PIN</div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label id="lblPin">PIN di Sicurezza (4 Cifre)</label>
+            <input type="password" id="pin" maxlength="4" placeholder="••••" autocomplete="off" style="letter-spacing: 6px; font-size: 18px; max-width: 180px;">
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Rules, Duration & Activation -->
+        <div class="nf-card">
+          <div class="section-header" id="secHeader3">03 / REGOLE & DURATA</div>
+
+          <!-- Switch 1: Bypass -->
+          <div class="switch-row">
+            <div>
+              <div class="switch-title" id="lblTitleBypass">Consenti Sblocco Straordinario</div>
+              <div class="switch-desc" id="lblDescBypass">Permette di inserire PIN e motivazione valida (>30 caratteri). Se non conforme, registra violazione.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggleBypass" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Whitelist field -->
+          <div class="input-group" id="whitelistGroup">
+            <label id="lblWhitelist">Parole Chiave Whitelist (Separate da virgola)</label>
+            <textarea id="whitelist" rows="2" placeholder="studio, lavoro, esame, università, tutorial, urgente"></textarea>
+          </div>
+
+          <!-- Switch 2: Infinite -->
+          <div class="switch-row">
+            <div>
+              <div class="switch-title" id="lblTitleInfinite">Blocco a Tempo Indeterminato (Infinito)</div>
+              <div class="switch-desc" id="lblDescInfinite">Il blocco non scade mai automaticamente. Resterà attivo finché non superi la penitenza del Creatore.</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="toggleInfinite">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Dates -->
+          <div class="date-row">
+            <div class="input-group" style="flex: 1;">
+              <label id="lblStart">Inizio (Data e Ora)</label>
+              <input type="datetime-local" id="startDateTime">
+            </div>
+            <div class="input-group" id="endDateGroup" style="flex: 1;">
+              <label id="lblEnd">Fine (Data e Ora)</label>
+              <input type="datetime-local" id="endDateTime">
+            </div>
+          </div>
+
+          <button type="button" id="btnActivate" class="btn-activate-hero">ATTIVA PROTOCOLLO SOFIA</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Footer -->
+  <footer class="bottom-footer" id="creatorTrigger">
+    CREATED BY KAOKAO34
+  </footer>
+
+  <!-- ==========================================
+       MODAL 1: CREATOR PIN PROMPT
+       ========================================== -->
+  <div id="creatorModal" class="modal-backdrop view-hidden">
+    <div class="modal-card">
+      <h2 id="modalTitle" style="font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;">TERMINALE CREATORE</h2>
+      <p id="modalDesc" style="font-size: 12.5px; color: var(--nf-text-muted); margin-bottom: 16px;">Inserisci il PIN per avviare la procedura di disattivazione:</p>
+      <div id="modalBanner" class="banner"></div>
+      <input type="password" id="modalPin" maxlength="4" placeholder="••••" style="text-align: center; font-size: 22px; letter-spacing: 8px; font-family: var(--nf-mono); margin-bottom: 16px;" autocomplete="off">
+      <button type="button" id="btnModalVerify" class="btn-activate-hero" style="margin-top: 0;">VERIFICA IDENTITÀ</button>
+      <button type="button" id="btnModalClose" class="btn-nf-red" style="background:#333; width:100%; padding:12px; margin-top:10px;">ANNULLA</button>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: ENRICO PAPI 5X PENANCE MODAL
+       ========================================== -->
+  <div id="papiModal" class="modal-backdrop view-hidden">
+    <div class="modal-card modal-papi-card">
+      <h2 id="papiModalTitle" style="font-size: 18px; font-weight: 800; color: var(--nf-red); margin-bottom: 6px; letter-spacing: 0.5px; text-transform: uppercase;">
+        🎺 PENITENZA OBBLIGATORIA: ENRICO PAPI
+      </h2>
+      <p id="papiModalDesc" style="font-size: 13px; color: #CCC; line-height: 1.5; margin-bottom: 14px;">
+        Volevi disattivare Sofia? Prima devi guardare Enrico Papi per <strong>5 VOLTE CONSECUTIVE</strong>.<br>
+        <span style="color:#FF5A5F; font-size: 11.5px;">Non vale saltare, non vale uscire. Il tasto di disattivazione si sbloccherà solo al termine.</span>
+      </p>
+
+      <div class="papi-progress-bar-bg">
+        <div id="papiProgressFill" class="papi-progress-bar-fill"></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size: 12.5px; font-weight: 700; margin-bottom: 6px;">
+        <span id="papiCounterLabel">VISIONE: 1 / 5</span>
+        <span id="papiTimerLabel" style="font-family:var(--nf-mono); color:var(--nf-text-muted);">00:00 / 00:16</span>
+      </div>
+
+      <div class="papi-video-wrap">
+        <iframe id="papiIframe" width="100%" height="100%" src="" frameborder="0" referrerpolicy="no-referrer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <button type="button" id="btnFinalDeactivate" disabled class="btn-activate-hero" style="background: #333; cursor: not-allowed; opacity: 0.6;">
+        🔒 COMPLETA 5 VISIONI PER SBLOCCARE
+      </button>
+
+      <button type="button" id="btnCancelPapi" class="btn-nf-red" style="background:#222; width:100%; padding:10px; margin-top:10px; font-size:12px;">
+        ARRENDITI E TORNA A STUDIARE
+      </button>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

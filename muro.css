@@ -1,0 +1,630 @@
+/* ==========================================================================
+   Sofia: Jailer Protocol - Widescreen Cinematic Netflix Terminal
+   ========================================================================== */
+
+:root, :host {
+  --nf-black: #000000;
+  --nf-dark: #0F0F0F;
+  --nf-terminal-bg: #141414;
+  --nf-card: #181818;
+  --nf-card-hero: #161616;
+  --nf-surface: #202020;
+  --nf-surface-input: #262626;
+  --nf-surface-hover: #2E2E2E;
+  --nf-red: #E50914;
+  --nf-red-hover: #B81D24;
+  --nf-red-glow: rgba(229, 9, 20, 0.45);
+  --nf-red-subtle: rgba(229, 9, 20, 0.15);
+  --nf-text: #FFFFFF;
+  --nf-text-muted: #9E9E9E;
+  --nf-text-subtle: #666666;
+  --nf-border: rgba(255, 255, 255, 0.12);
+  --nf-border-focus: #E50914;
+  --nf-radius-sm: 6px;
+  --nf-radius-md: 10px;
+  --nf-radius-lg: 16px;
+  --nf-font: "Netflix Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --nf-mono: "SF Mono", Monaco, "Cascadia Code", Consolas, monospace;
+}
+
+#sofia-muro {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: radial-gradient(circle at center, rgba(18, 18, 18, 0.97) 0%, rgba(5, 5, 5, 0.99) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--nf-text) !important;
+  font-family: var(--nf-font) !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  cursor: default !important;
+  overflow-y: auto !important;
+  padding: 24px !important;
+  transition: opacity 0.3s ease !important;
+}
+
+#sofia-muro.sofia-fading-out {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#sofia-muro * {
+  box-sizing: border-box !important;
+}
+
+/* ==========================================================================
+   Widescreen Terminal Container (Breaks the 480px box constraint!)
+   ========================================================================== */
+.sofia-terminal {
+  width: 100% !important;
+  max-width: 1020px !important;
+  max-height: 92vh !important;
+  background: var(--nf-terminal-bg) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-lg) !important;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.95), 0 0 60px rgba(229, 9, 20, 0.12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  animation: nfFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes nfFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Top Bar: Brand, Badges and Language Switcher */
+.sofia-terminal-header {
+  height: 64px !important;
+  background: rgba(22, 22, 22, 0.9) !important;
+  border-bottom: 1px solid var(--nf-border) !important;
+  padding: 0 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-shrink: 0 !important;
+}
+
+.sofia-brand-badge {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.sofia-mini-shield {
+  width: 32px !important;
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sofia-mini-logo {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.sofia-brand-text {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.3px !important;
+}
+.sofia-brand-text span {
+  color: var(--nf-red) !important;
+}
+
+.sofia-badge-pill {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  padding: 4px 10px !important;
+  border-radius: 20px !important;
+  letter-spacing: 0.6px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--nf-text-muted) !important;
+  border: 1px solid var(--nf-border) !important;
+}
+
+.sofia-badge-pill.active {
+  background: var(--nf-red-subtle) !important;
+  color: var(--nf-red) !important;
+  border-color: rgba(229, 9, 20, 0.45) !important;
+}
+
+/* Styled Language Pills (Matching Options Page!) */
+.sofia-lang-switcher {
+  display: flex !important;
+  background: #222222 !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: 20px !important;
+  padding: 3px !important;
+}
+
+.sofia-lang-pill {
+  background: transparent !important;
+  border: none !important;
+  color: var(--nf-text-muted) !important;
+  padding: 5px 14px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: all 0.2s ease !important;
+}
+
+.sofia-lang-pill:hover {
+  color: #FFFFFF !important;
+}
+
+.sofia-lang-pill.active {
+  background: var(--nf-red) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 2px 8px var(--nf-red-glow) !important;
+}
+
+/* ==========================================================================
+   2-Column Widescreen Body Grid
+   ========================================================================== */
+.sofia-terminal-body {
+  display: grid !important;
+  grid-template-columns: 1fr 1.12fr !important;
+  gap: 28px !important;
+  padding: 28px !important;
+  overflow-y: auto !important;
+  flex: 1 !important;
+}
+
+/* Left Hero Column: Identity, Glow Emblem & Countdown */
+.sofia-col-hero {
+  background: var(--nf-card-hero) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-md) !important;
+  padding: 28px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  position: relative !important;
+}
+
+/* Pure S-Ribbon Logo with Cinematic Glow Backdrop */
+.sofia-s-logo-wrap {
+  position: relative !important;
+  width: 90px !important;
+  height: 90px !important;
+  margin: 4px auto 16px auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  pointer-events: none !important;
+}
+
+.sofia-s-glow-backdrop {
+  position: absolute !important;
+  width: 90px !important;
+  height: 90px !important;
+  background: radial-gradient(circle, rgba(229, 9, 20, 0.7) 0%, rgba(229, 9, 20, 0.2) 45%, rgba(229, 9, 20, 0) 70%) !important;
+  border-radius: 50% !important;
+  filter: blur(12px) !important;
+  animation: sofiaPulse 3s ease-in-out infinite alternate !important;
+}
+
+.sofia-s-logo-svg {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+.sofia-mini-s {
+  width: 24px !important;
+  height: 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.sofia-title {
+  font-size: 24px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  margin: 0 0 6px 0 !important;
+  letter-spacing: -0.5px !important;
+  text-transform: uppercase !important;
+}
+
+.sofia-desc {
+  font-size: 13px !important;
+  color: var(--nf-text-muted) !important;
+  margin: 0 0 16px 0 !important;
+  line-height: 1.45 !important;
+  max-width: 360px !important;
+}
+
+/* Target Domain Pill */
+.sofia-target-domain-box {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-sm) !important;
+  padding: 6px 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 20px !important;
+}
+
+.sofia-target-label {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  color: var(--nf-text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+}
+
+.sofia-target-value {
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  font-family: var(--nf-mono) !important;
+  background: var(--nf-red-subtle) !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(229, 9, 20, 0.3) !important;
+}
+
+/* Countdown Card */
+.sofia-countdown-container {
+  width: 100% !important;
+  background: var(--nf-surface) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-md) !important;
+  padding: 16px !important;
+  margin-top: auto !important;
+}
+
+.sofia-countdown-label {
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.5px !important;
+  color: var(--nf-text-muted) !important;
+  text-transform: uppercase !important;
+  margin-bottom: 6px !important;
+}
+
+.sofia-countdown {
+  font-family: var(--nf-mono) !important;
+  font-size: 34px !important;
+  font-weight: 800 !important;
+  color: var(--nf-red) !important;
+  letter-spacing: 2px !important;
+}
+
+/* Right Column: Emergency Bypass Terminal */
+.sofia-col-bypass {
+  background: var(--nf-card) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-md) !important;
+  padding: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.sofia-section-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 4px !important;
+}
+
+.sofia-sec-num {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  color: var(--nf-red) !important;
+  letter-spacing: 1px !important;
+}
+
+.sofia-sec-title {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+}
+
+.sofia-sec-sub {
+  font-size: 12px !important;
+  color: var(--nf-text-muted) !important;
+  line-height: 1.4 !important;
+  margin-bottom: 16px !important;
+  border-bottom: 1px solid var(--nf-border) !important;
+  padding-bottom: 12px !important;
+}
+
+/* Field Groups */
+.sofia-field-group {
+  margin-bottom: 14px !important;
+  text-align: left !important;
+  pointer-events: auto !important;
+}
+
+.sofia-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: var(--nf-text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  display: block !important;
+  margin-bottom: 6px !important;
+}
+
+.sofia-char-count {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #777777 !important;
+  font-family: var(--nf-mono) !important;
+  transition: color 0.2s ease !important;
+}
+
+.sofia-char-count.valid {
+  color: #10B981 !important;
+}
+
+.sofia-input,
+.sofia-textarea {
+  width: 100% !important;
+  background: var(--nf-surface-input) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-sm) !important;
+  padding: 12px 14px !important;
+  color: #FFFFFF !important;
+  outline: none !important;
+  font-family: inherit !important;
+  font-size: 13.5px !important;
+  pointer-events: auto !important;
+  cursor: text !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  transition: all 0.2s ease !important;
+}
+
+.sofia-input:focus,
+.sofia-textarea:focus {
+  border-color: var(--nf-red) !important;
+  background: #303030 !important;
+  box-shadow: 0 0 0 2px var(--nf-red-glow) !important;
+}
+
+.sofia-input.pin-box {
+  text-align: center !important;
+  font-size: 20px !important;
+  letter-spacing: 10px !important;
+  font-family: var(--nf-mono) !important;
+  font-weight: 700 !important;
+  max-width: 200px !important;
+}
+
+.sofia-textarea {
+  resize: vertical !important;
+  min-height: 80px !important;
+  line-height: 1.45 !important;
+}
+
+/* Unlock Action Button */
+.sofia-btn {
+  width: 100% !important;
+  background: var(--nf-red) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: var(--nf-radius-sm) !important;
+  padding: 14px 20px !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: background 0.2s ease, box-shadow 0.2s ease !important;
+  margin-top: auto !important;
+}
+
+.sofia-btn:hover {
+  background: var(--nf-red-hover) !important;
+  box-shadow: 0 4px 18px var(--nf-red-glow) !important;
+}
+
+.sofia-btn:disabled {
+  background: #333333 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7 !important;
+  box-shadow: none !important;
+}
+
+.sofia-btn-secondary {
+  background: #333333 !important;
+  color: #FFFFFF !important;
+}
+.sofia-btn-secondary:hover {
+  background: #444444 !important;
+}
+
+/* Notification Banners */
+.sofia-banner {
+  padding: 10px 14px !important;
+  border-radius: var(--nf-radius-sm) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  margin-bottom: 12px !important;
+  display: none !important;
+  text-align: center !important;
+  pointer-events: auto !important;
+}
+
+.sofia-banner-error {
+  background: rgba(229, 9, 20, 0.18) !important;
+  color: #FF5A5F !important;
+  border: 1px solid rgba(229, 9, 20, 0.45) !important;
+  display: block !important;
+}
+
+.sofia-banner-warning {
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #FBBF24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.45) !important;
+  display: block !important;
+}
+
+.sofia-banner-success {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34D399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.45) !important;
+  display: block !important;
+}
+
+/* Absolute Lock Notice Box */
+.sofia-sealed-box {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px dashed rgba(255, 255, 255, 0.2) !important;
+  border-radius: var(--nf-radius-md) !important;
+  padding: 28px 20px !important;
+  text-align: center !important;
+  margin: auto 0 !important;
+}
+
+.sofia-sealed-icon {
+  font-size: 32px !important;
+  margin-bottom: 10px !important;
+}
+
+.sofia-sealed-title {
+  font-size: 13.5px !important;
+  color: var(--nf-text-muted) !important;
+  line-height: 1.5 !important;
+}
+
+/* ==========================================================================
+   Bottom Terminal Footer Callout
+   ========================================================================== */
+.sofia-terminal-footer {
+  background: #101010 !important;
+  border-top: 1px solid var(--nf-border) !important;
+  padding: 16px 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
+  flex-shrink: 0 !important;
+}
+
+.sofia-callout-text {
+  font-size: 12.5px !important;
+  color: #8C8C8C !important;
+  line-height: 1.5 !important;
+  flex: 1 !important;
+}
+
+.sofia-btn-creator {
+  background: transparent !important;
+  border: 1px solid rgba(229, 9, 20, 0.4) !important;
+  color: var(--nf-red) !important;
+  padding: 8px 16px !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.8px !important;
+  border-radius: var(--nf-radius-sm) !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
+  transition: all 0.2s ease !important;
+}
+
+.sofia-btn-creator:hover {
+  background: var(--nf-red) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 12px var(--nf-red-glow) !important;
+}
+
+/* ==========================================================================
+   Modals (Creator Terminal & Enrico Papi Penance)
+   ========================================================================== */
+.sofia-modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.92) !important;
+  backdrop-filter: blur(12px) !important;
+  z-index: 2147483648 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+  pointer-events: auto !important;
+}
+
+.sofia-modal-card {
+  width: 100% !important;
+  max-width: 440px !important;
+  background: var(--nf-card) !important;
+  border: 1px solid var(--nf-border) !important;
+  border-radius: var(--nf-radius-md) !important;
+  padding: 32px 28px !important;
+  text-align: center !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95) !important;
+  pointer-events: auto !important;
+}
+
+.sofia-papi-card {
+  max-width: 620px !important;
+}
+
+.sofia-papi-video-wrap {
+  width: 100% !important;
+  aspect-ratio: 16/9 !important;
+  background: #000 !important;
+  border-radius: var(--nf-radius-sm) !important;
+  overflow: hidden !important;
+  margin: 16px 0 !important;
+  border: 1px solid var(--nf-border) !important;
+}
+
+.sofia-papi-progress-bg {
+  width: 100% !important;
+  height: 8px !important;
+  background: #2A2A2A !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  margin-bottom: 12px !important;
+}
+
+.sofia-papi-progress-fill {
+  height: 100% !important;
+  width: 0% !important;
+  background: var(--nf-red) !important;
+  transition: width 0.3s ease !important;
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+@media (max-width: 780px) {
+  .sofia-terminal-body {
+    grid-template-columns: 1fr !important;
+  }
+  .sofia-terminal-footer {
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+}
