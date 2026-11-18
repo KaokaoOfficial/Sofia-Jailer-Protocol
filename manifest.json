@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Sofia: Jailer Protocol",
   "version": "3.2.0",
-  "description": "Protocollo avanzato di blocco e autodisciplina multi-sito supervisionato da Sofia.",
+  "description": "A personal, experimental focus-lock extension for Chromium browsers. Built for fun; may contain bugs.",
   "permissions": [
     "storage",
     "declarativeNetRequest"
