@@ -1,60 +1,109 @@
-# Sofia: Jailer Protocol (v3.2.0) 🛡️
+# Sofia — Jailer Protocol
 
-[![Manifest V3](https://img.shields.io/badge/Manifest-V3-brightgreen.svg)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+> A personal browser-extension project focused on reducing distractions and making intentional access to selected websites harder.
+
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/develop/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Chrome%20%7C%20Edge%20%7C%20Brave-orange.svg)]()
+[![Status: Experimental](https://img.shields.io/badge/status-experimental-orange.svg)](#project-status)
 
-> **Sofia: Jailer Protocol** è un'estensione per browser (Manifest V3) per il focus assoluto e l'autodisciplina. Blocca siti e piattaforme fonte di distrazione (YouTube, Netflix, Instagram, TikTok, Reddit, domini custom) con un'interfaccia widescreen in stile cinematografico Netflix, isolamento Shadow DOM e architettura anti-sabotaggio supervisionata da Sofia.
+Sofia is a small, experimental browser extension created by **Kaokao34** as a personal project and developed for fun. It lets you choose websites you want to stay away from, configure a focus period, and place a blocking screen in front of those sites while the protocol is active.
 
----
+This is an independent hobby project. It is **not bug-free**, is not presented as a production-grade security product, and may behave unexpectedly on some websites or browser versions. Use it with that understanding.
 
-## ⚡ Caratteristiche Principali (v3.2.0)
+## What it does
 
-* 🎬 **Design Cinematografico Stile Netflix:** Nuova interfaccia widescreen pulita, priva di elementi ammassati, con logo vettoriale S Ribbon, contrasto ottimizzato e tema Dark Obsidian.
-* 🛡️ **Isolamento Completo con Shadow DOM:** Il muro di blocco opera in uno Shadow DOM isolato per evitare conflitti CSS e blocchi di input o click su piattaforme complesse come Netflix e YouTube.
-* 🌍 **Internazionalizzazione Centralizzata (`i18n.js`):** Tutti i testi e le traduzioni (Italiano / Inglese) sono isolati in un unico modulo dedicato con codifica Unicode pulita, eliminando problemi di codifica e duplicazioni.
-* ⏳ **Sblocco Temporaneo Persistente (15 Minuti):** Se la motivazione è valida o se viene registrata un'infrazione con bypass, la sessione temporanea di 15 minuti è memorizzata in modo sicuro per sopravvivere ai refresh di pagina e al ciclo di vita del Service Worker.
-* 🎺 **Penitenza del Creatore (Enrico Papi 5x):** Per disattivare definitivamente Sofia tramite il Terminale Creatore, è obbligatorio completare la visione di 5 iterazioni consecutive di Enrico Papi senza possibilità di saltare.
-* 🎯 **Easter Egg di Disciplina (Rickroll):** Al superamento della soglia di 3 violazioni registrate, scatta automaticamente il protocollo di punizione a sorpresa.
-* 🌐 **Routing e Header DeclarativeNetRequest:** Regole dichiarative di rete (`rules.json`) per garantire la riproduzione video senza errori di configurazione del player.
+- **Website blocking:** choose from the built-in platform presets or add custom domains.
+- **Timed or indefinite sessions:** configure a start and end time, or enable an indefinite focus period.
+- **Emergency access:** optionally allow a temporary 15-minute unlock after entering the configured PIN and a justification.
+- **Violation tracking:** failed or non-compliant unlock attempts are recorded. The project includes a playful Rickroll easter egg after the configured violation threshold.
+- **Creator deactivation flow:** the current build includes a deliberately playful creator-terminal/penalty sequence.
+- **Control centre:** manage the protocol from a dedicated options page.
+- **Italian and English UI:** interface strings are centralised in `i18n.js`.
+- **Manifest V3 architecture:** uses a background service worker, content scripts, local extension storage and Declarative Net Request rules.
 
----
+The blocking interface is injected by the content script and isolated with Shadow DOM to reduce styling conflicts with the pages it covers. As websites change their layouts and navigation behaviour, compatibility can vary.
 
-## 📁 Struttura del Progetto
+## What Sofia is not
+
+- It is **not** an operating-system-level blocker.
+- It is **not** a parental-control or enterprise security product.
+- It cannot guarantee that every route, embedded page, browser, or alternative access method will be blocked.
+- It does not make a website or its content inaccessible outside the browser profile where the extension is installed.
+
+## Installation
+
+This repository currently provides the extension source code. To load it locally:
+
+1. Download the repository or clone it:
+   ```bash
+   git clone https://github.com/KaokaoOfficial/Sofia.git
+   ```
+2. Open `chrome://extensions` in Chrome (or the equivalent extensions page in a Chromium-based browser).
+3. Enable **Developer mode**.
+4. Select **Load unpacked**.
+5. Choose the folder containing `manifest.json`.
+
+After installation, open Sofia from the browser toolbar to access its control centre.
+
+## Configuration overview
+
+1. Open the Sofia control centre.
+2. Choose the website presets you want to block, and/or add custom domains.
+3. Set a four-digit security PIN.
+4. Choose whether emergency access is allowed.
+5. Configure the focus period (scheduled or indefinite).
+6. Activate the protocol.
+
+When emergency access is enabled, the extension asks for the PIN and a justification. A successful temporary unlock lasts 15 minutes. Exact behaviour can depend on the page and browser lifecycle.
+
+## Project layout
 
 ```text
 Sofia/
-├── manifest.json       # Configurazione Manifest V3 e dichiarazioni permessi
-├── background.js      # Service Worker: coordinatore stato violazioni e sessioni
-├── content.js         # Shadow DOM content script iniettato sui siti bloccati
-├── i18n.js            # Sistema centralizzato di traduzioni (IT/EN)
-├── muro.css           # Foglio di stile dark Netflix per il muro di blocco
-├── options.html       # Centro di controllo widescreen desktop
-├── options.js         # Logica reattiva, crittografia SHA-256 e penitenza Papi
-├── rules.json         # Regole declarativeNetRequest per header YouTube
-├── README.md          # Documentazione del progetto
-└── icon*.png          # Icone vettoriali ad alta definizione (16, 32, 48, 128)
+├── background.js   # Manifest V3 service worker and shared state handling
+├── content.js      # Website detection and blocking-screen injection
+├── i18n.js         # Italian and English interface strings
+├── manifest.json   # Extension metadata, permissions and entry points
+├── muro.css        # Styles for the injected blocking screen
+├── options.html    # Control-centre markup and styling
+├── options.js      # Control-centre behaviour and configuration
+├── rules.json      # Declarative Net Request rules
+├── icon16.png      # Toolbar icon
+├── icon32.png      # Extension icon
+├── icon48.png      # Extension icon
+└── icon128.png     # Store/high-resolution icon
 ```
 
----
+## Permissions
 
-## 🛠️ Installazione Locale (Developer Mode)
+The manifest requests:
 
-1. Apri Google Chrome (o Microsoft Edge, Brave, Opera).
-2. Vai a: `chrome://extensions`.
-3. Attiva la levetta **Modalità sviluppatore** (*Developer mode*) in alto a destra.
-4. Clicca su **Carica estensione non pacchettizzata** (*Load unpacked*).
-5. Seleziona la cartella `Sofia`.
-6. Clicca sull'icona di Sofia nella barra delle estensioni per aprire il Centro di Controllo.
+- `storage` — save the extension's configuration and local state.
+- `declarativeNetRequest` — apply the bundled network request rules.
+- `<all_urls>` host access — allow the content script to run on websites selected for blocking.
 
----
+Review `manifest.json` and `rules.json` before installing if you want to inspect the exact permissions and network rules.
 
-## 🕹️ Configurazione Rapida
+## Project status and limitations
 
-1. **Imposta il PIN:** Scegli un PIN numerico a 4 cifre per autenticare le operazioni straordinarie.
-2. **Seleziona i Domini:** Clicca sui preset (YouTube, Netflix, Instagram, TikTok...) o aggiungi qualsiasi dominio personalizzato.
-3. **Regole & Durata:** Scegli la durata (determinata o infinita) e configura l'eventuale whitelist di parole chiave per la motivazione di sblocco.
-4. **Attiva il Protocollo:** Clicca su *Attiva Protocollo Sofia* per sigillare il browser.
+Sofia is maintained as a personal learning/experimentation project. It has not been independently audited, and no claim is made that it is free of bugs. Some behaviours may be affected by browser updates, single-page applications, site redesigns, embedded content, permissions, or local browser settings.
 
-Rilasciato con licenza MIT. Creato da **Kaokao34**.
-"# Sofia" 
+Please report reproducible issues with:
+- browser name and version;
+- operating system;
+- the affected website and steps to reproduce;
+- any relevant console error messages (remove personal data before sharing).
+
+There is no guarantee of support, maintenance frequency, or compatibility with every Chromium-based browser.
+
+## Contributing
+
+Suggestions and bug reports are welcome. Keep reports focused and include enough detail to reproduce the behaviour. Before proposing a change, check that it does not weaken the extension's blocking or configuration flows.
+
+## Credits
+
+Created by **Kaokao34** — [@KaokaoOfficial](https://github.com/KaokaoOfficial).
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE).
