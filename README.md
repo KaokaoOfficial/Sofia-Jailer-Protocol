@@ -36,7 +36,7 @@ This repository currently provides the extension source code. To load it locally
 
 1. Download the repository or clone it:
    ```bash
-   git clone https://github.com/KaokaoOfficial/Sofia.git
+   git clone https://github.com/KaokaoOfficial/Sofia-Jailer-Protocol.git
    ```
 2. Open `chrome://extensions` in Chrome (or the equivalent extensions page in a Chromium-based browser).
 3. Enable **Developer mode**.
